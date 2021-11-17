@@ -1,3 +1,43 @@
+<?php
+session_start();
+
+if( isset($_SESSION["login"]) ){
+    header("Location: table.php");
+    exit;
+}
+
+$host="localhost";
+$user="root";
+$password="";
+$db="demo";
+
+$connect = mysqli_connect($host,$user,$password);
+mysqli_select_db($connect,$db);
+
+if(isset($_POST['uname'])){
+    $uname=$_POST['uname'];
+    $password=$_POST['password'];
+
+    $sql="select * from loginform where Email='".$uname."'AND Pass='".$password."' limit 1";
+
+    $result=mysqli_query($connect,$sql);
+    
+    if(mysqli_num_rows($result)==1){
+        $_SESSION["login"] = true;
+
+        setcookie('user','admin',time() + 60);
+
+        header('location: table.php');
+    }
+    else{
+        $message = "Password salah";
+        echo "<script type='text/javascript'>alert('$message');</script>";
+    }
+}
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,23 +53,27 @@
         <div class="row justify-content-center">
             <div class="col-lg-4">
                 <div class="logo">
-                    <img src="/img/logo3.png" alt="" class="img-fluid">
+                    <img src="./img/logo3.png" alt="" class="img-fluid">
                 </div>
             </div>
         </div>
         <div class="row justify-content-center formulir">
             <div class="col-lg-4">
-                <form>
+                <form method="POST" action="#">
                     <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Email</label>
-                      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                      <label for="exampleInputEmail1" class="form-label">Username</label>
+                      <input type="text" name="uname" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                     </div>
                     <div class="mb-3">
                       <label for="exampleInputPassword1" class="form-label">Password</label>
-                      <input type="password" class="form-control" id="exampleInputPassword1">
+                      <input type="password" name="password" class="form-control" id="exampleInputPassword1">
                     </div>
+                    <!-- <div class="form-check">
+                        <input type="checkbox" name="remember" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">Remember Me</label>
+                    </div> -->
                     <button type="submit" class="btn btn-success">Login</button>
-                  </form>
+                </form>
             </div>
         </div>
     </div>
